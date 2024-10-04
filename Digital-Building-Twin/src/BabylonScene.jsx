@@ -41,8 +41,8 @@ const BabylonScene = ({ isAnimationStarted }) => {
             Animation.ANIMATIONTYPE_VECTOR3 
           );
           animation.setKeys([
-            { frame: 0, value: cube.position.clone() }, //  موقعیت فعلی
-            { frame: 60, value: new Vector3(-0.7, 0, 0) }  //  موقعیت نهایی
+            { frame: 0, value: cube.position.clone(0, 0, 0) }, //  موقعیت فعلی
+            { frame: 60, value: new Vector3(-0.7, 0.7, 0) }  //  موقعیت نهایی
           ]);
           cube.animations.push(animation);
 
