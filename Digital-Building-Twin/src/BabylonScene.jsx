@@ -1,71 +1,69 @@
-// src/BabylonScene.jsx
 import React, { useRef, useEffect } from 'react';
-import { Engine, Scene } from '@babylonjs/core';
-import '@babylonjs/loaders'; // برای بارگذاری مدل‌های مختلف
-import {
-  ArcRotateCamera,
-  HemisphericLight,
-  Vector3,
-  SceneLoader,
-} from '@babylonjs/core';
+import { Engine, Scene, ArcRotateCamera, HemisphericLight, Vector3, SceneLoader, Animation } from '@babylonjs/core';
+import '@babylonjs/loaders/glTF'; 
 
-const BabylonScene = () => {
+const BabylonScene = ({ isAnimationStarted }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const engine = new Engine(canvas, true);
+    const scene = new Scene(engine);
 
-    const createScene = () => {
-      const scene = new Scene(engine);
+    // -- Camera --
+    const camera = new ArcRotateCamera(
+      'camera',
+      -Math.PI / 2,
+      Math.PI / 2,
+      10,
+      new Vector3(0, 0, 0), 
+      scene
+    );
+    camera.attachControl(canvas, true);
 
-      // ایجاد دوربین
-      const camera = new ArcRotateCamera(
-        'camera1',
-        -Math.PI / 2,
-        Math.PI / 2.5,
-        10,
-        Vector3.Zero(),
-        scene
-      );
-      camera.attachControl(canvas, true);
+    // -- Light --
+    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
 
-      // ایجاد نور
-      const light = new HemisphericLight(
-        'light1',
-        new Vector3(1, 1, 0),
-        scene
-      );
+    SceneLoader.ImportMesh(
+      '', //  اینجا خالی باشه چون  فایل  در پوشه 'models'  هست
+      'models/', 
+      'building.gltf', 
+      scene,
+      (meshes) => {
+        const cube = scene.getMeshByName("Cube.001"); 
 
-      // بارگذاری مدل سه‌بعدی
-      SceneLoader.Append(
-        '',
-        'models/building.gltf', // مسیر مدل خود را وارد کنید
-        scene,
-        function (scene) {
-          // تنظیم نور و دوربین پس از بارگذاری مدل
-          scene.createDefaultCameraOrLight(true, true, true);
+        if (cube) {
+          //  انیمیشن موقعیت  برای Cube.001
+          const animation = new Animation(
+            "moveAnimation",
+            "position", 
+            60,
+            Animation.ANIMATIONTYPE_VECTOR3 
+          );
+          animation.setKeys([
+            { frame: 0, value: cube.position.clone() }, //  موقعیت فعلی
+            { frame: 60, value: new Vector3(-0.7, 0, 0) }  //  موقعیت نهایی
+          ]);
+          cube.animations.push(animation);
+
+          if (isAnimationStarted) {
+            scene.beginAnimation(cube, 0, 60, false);
+            console.log("mission completed")
+          }
+        } else {
+          console.error("Cube.001 not found in the loaded model.");
         }
-      );
-
-      return scene;
-    };
-
-    const scene = createScene();
+      }
+    );
 
     engine.runRenderLoop(() => {
       scene.render();
     });
 
-    window.addEventListener('resize', () => {
-      engine.resize();
-    });
-
-    // پاک‌سازی منابع هنگام خروج از کامپوننت
     return () => {
       engine.dispose();
     };
-  }, []);
+  }, [isAnimationStarted]);
 
   return <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />;
 };

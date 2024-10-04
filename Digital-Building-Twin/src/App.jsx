@@ -1,11 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import BabylonScene from './BabylonScene'; 
+import React, { useState } from 'react';
+import BabylonScene from './BabylonScene';
 
 function App() {
+  const [isAnimationStarted, setIsAnimationStarted] = useState(false);
+
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <BabylonScene />
+    <div>
+      <button onClick={() => setIsAnimationStarted(true)}>
+        Start Animation
+      </button>
+      <BabylonScene isAnimationStarted={isAnimationStarted} />
     </div>
   );
 }
