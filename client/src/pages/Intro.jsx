@@ -22,7 +22,7 @@ const Intro = () => {
                     LET'S DO IT.
                 </h1>
                 <p>
-                    create your unique and exclusive shirt with our brand-new 3d customization tool. <strong>Unless your imagination</strong>{" "} and define your own style.
+                    create your unique and exclusive House and predict all your needs for your home. <strong>Unless your imagination</strong>{" "} and define your own style.
                 </p>
 
                 <button className='start-btn filled' onClick={handleClick}>
